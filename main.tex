@@ -266,7 +266,9 @@ These comparisons describe how feedback and integration patterns vary across age
 \subsection{Human-Agent PR Workflow Model}
 \label{sec:method_workflow_model}
 
-The PR timelines support four research questions about participation, feedback, revision, and integration (Figure~\ref{fig:method_rq_workflow_timeline}). RQ1 examines which PRs receive feedback and who provides the first feedback. For PRs with feedback, RQ2 examines its channels, forms, and content. RQ3 then examines code changes after feedback, including their timing, authors, and size. RQ4 relates these interaction patterns to whether PRs are merged, closed without merging, or still open at data collection. Together, these four aspects organize the analysis and characterize differences in how PRs unfold.
+Recent research examines discussions among developers triggered by automated review comments~\cite{schaefDeveloperAnalyzerInteractions2024}. This motivates examining both who participates in the discussion and what feedback they provide, captured here as participation and feedback. Research on human and LLM review comments further distinguishes comment types from whether developers resolve them~\cite{goldmanWhatTypesCode2025}. This distinction motivates examining revision separately from feedback, focusing on the code changes that follow it. Finally, research on pull-based development examines merge decisions and processing time~\cite{gousiosExploratoryPullBased2014}. Integration connects the preceding interactions to the PR's observed status. These perspectives motivate four research questions that characterize RQ1 Participation, RQ2 Feedback, RQ3 Revision, and RQ4 Integration within the same PR timeline (Figure~\ref{fig:method_rq_workflow_timeline}).
+
+RQ1 examines which PRs receive feedback and who provides the first feedback. For PRs with feedback, RQ2 examines its channels, forms, and content. RQ3 then examines code changes after feedback, including their timing, authors, and size. RQ4 relates these interaction patterns to whether PRs are merged, closed without merging, or still open at data collection.
 
 \begin{figure*}[t]
     \centering

@@ -462,35 +462,31 @@ The committer field is used when no author account is available.
 \subsubsection{RQ4: Integration}
 \label{sec:method_taxonomy_rq4}
 
-% ORIGINAL: RQ4 asks how the PR workflows characterized in the earlier stages are associated with repository endpoints.
-% ORIGINAL: Each reconstructed PR is assigned to one of the endpoint categories below.
-% ORIGINAL: A PR is classified as \emph{merged} when a merge timestamp is present.
-% ORIGINAL: A PR is classified as \emph{closed without merge} when a close timestamp is present but no merge timestamp is present.
-% ORIGINAL: A PR with no close timestamp by the end of data collection is classified as \emph{open}.
-% ORIGINAL: When merge and close metadata are both present, we consider it merged, as merged PRs are also closed by GitHub workflow.
-RQ4 asks how the PR workflows characterized in the earlier stages are associated with repository endpoints.
-Each PR receives one endpoint label: \emph{merged} when a merge timestamp is present, \emph{closed without merge} when a close timestamp appears without a merge timestamp, and \emph{open} when no close timestamp appears by the end of data collection.
-When merge and close metadata are both present, we classify the PR as merged because merged PRs are also closed by GitHub workflow.
+RQ4 examines how the PR pathways defined in Section~\ref{sec:method_rq3_cycles} relate to observed PR states.
+These states are determined from the PR metadata in the dataset snapshot used for analysis, using GitHub's merge and close timestamps.\footnote{GitHub GraphQL API, \texttt{PullRequest.mergedAt} and \texttt{PullRequest.closedAt}: \url{https://docs.github.com/en/graphql/reference/pulls\#pullrequest}.}
+A PR is classified as \emph{merged} if a GitHub merge timestamp is present, including when a close timestamp is also recorded.
+Otherwise, a recorded close timestamp identifies a PR as \emph{closed without merge}.
+PRs with neither timestamp are classified as \emph{open}, consistent with their recorded state.
 
-% ORIGINAL: RQ4 keeps the full PR-level denominator so that PRs without visible feedback still receive endpoint labels.
-% ORIGINAL: The primary stratification is the RQ3 feedback-response pathway, which summarizes whether feedback appeared, whether code activity followed, and whether the final feedback was close- or merge-adjacent.
-% ORIGINAL: Feedback-to-endpoint timing is computed only when the first feedback strictly precedes the merge/close timestamp.
-% ORIGINAL: Other PRs remain in endpoint denominators but are excluded from latency summaries.
-% ORIGINAL: Open or without-close PRs are right-censored by the data-collection window and are interpreted as extraction-time states rather than final states.
-% ORIGINAL: Endpoint contrasts use percentage point (pp) differences from the specified baseline.
-% ORIGINAL: For construct-specific panels, the baseline is the endpoint rate over the construct's covered PR subset before splitting by that construct.
-RQ4 keeps the full PR-level denominator, so PRs without visible feedback still receive endpoint labels.
-The primary stratification is the RQ3 feedback-response pathway, which summarizes whether feedback appeared, whether code activity followed, and whether final feedback was close- or merge-adjacent.
-Feedback-to-endpoint timing is computed only when first feedback strictly precedes merge or close; other PRs remain in endpoint denominators but are excluded from latency summaries.
-Open or without-close PRs are right-censored by the data-collection window and are interpreted as extraction-time states rather than final states.
-Endpoint contrasts use percentage point (pp) differences from the specified baseline.
-For construct-specific panels, the baseline is the endpoint rate over the construct's covered PR subset before splitting by that construct.
-% ORIGINAL:
-% The covered subsets are first-retained-actor PRs for actor rows, first-retained-intent or body-form PRs for intent/body rows, and scoreable first-human-triager PRs for footprint rows.
-% ORIGINAL: The covered subsets are first-retained-actor PRs for actor rows, first-retained descriptive intent or body-form PRs for intent/body rows, and scoreable first-human-triager PRs for footprint rows.
-The covered subsets are first-retained-actor PRs for actor rows, first-retained-intent or body-form PRs for intent/body rows, and scoreable first-human-triager PRs for footprint rows.
-Reported deltas are stratified endpoint rates minus the construct baseline.
-No regression adjustment is implied.
+The pathway comparison includes all agent-authored PRs in the study sample, selected by creation time regardless of their observed state.
+PRs without visible feedback are included in the corresponding pathway defined in Section~\ref{sec:method_rq3_cycles}.
+Within each pathway, the proportions of merged, closed-without-merge, and open PRs use all PRs in that pathway as the denominator.
+Merge-rate differences are reported in percentage points by subtracting the merge rate of the no-visible-feedback pathway from that of each other pathway.
+
+Additional comparisons group agent-authored PRs by the provider, primary intent, or text form of their first feedback event remaining after message filtering.
+Each comparison includes PRs with the corresponding information available.
+The footprint comparison further restricts the sample to PRs whose first retained feedback comes from a human with an available score, using the quartiles defined in Section~\ref{sec:method_rq1_entry}.
+For each comparison, the reference proportion is calculated across its eligible PRs before grouping.
+Differences in merge and open proportions are reported in percentage points relative to this reference.
+
+Time from first feedback to merge or closure is calculated separately from the PR timelines used in RQ3.
+For each measure, the first feedback timestamp is subtracted from the corresponding GitHub timestamp, and the duration is expressed in days.
+Only PRs whose first feedback strictly precedes that timestamp contribute to the timing summary.
+Time to closure includes merged PRs with a recorded close timestamp.
+
+For merged PRs in the late-feedback pathway, the last feedback timestamp is compared with the merge timestamp to determine whether feedback occurs before, at the same recorded time as, or after merging.
+PRs in the late-feedback pathway are also grouped by whether their final feedback block contains comments, reviews, or both.
+For blocks containing reviews, merge proportions are further summarized by the review states recorded by GitHub, including blocks in which all reviews indicate approval.\footnote{GitHub records approval as \texttt{APPROVED} in \texttt{PullRequestReview.state}: \url{https://docs.github.com/en/graphql/reference/pulls\#pullrequestreviewstate}.}
 
 \subsection{Validation and Robustness}
 \label{sec:method_validation}
@@ -517,6 +513,27 @@ PRs whose first human responder lacks scoreable metadata remain outside these fo
 \runinhead{Endpoint censoring sensitivity}
 Because open or without-close endpoints may reflect the collection boundary, we repeat integration summaries after excluding PRs opened near the end of the study window and after exclusions that leave one top agent out, so that endpoint patterns are not affected by late-window censoring or a single dominant agent.
 Across the main and sensitivity summaries, proportions are reported with counts and denominators, with Wilson or difference intervals for selected actor, syntax, and endpoint contrasts in the artifact.
+
+\runinhead{Repository characteristics}
+To examine how workflow patterns vary across repositories, agent-authored PRs are grouped by repository ownership, repository age at PR creation, and the number of sampled PRs from each repository.
+Within each group, the analysis calculates the proportions of PRs with visible feedback, at least one feedback-response cycle, and a recorded merge.
+
+Ownership distinguishes repositories owned by personal accounts from those owned by organizations.
+Repository age is divided into four descriptive groups: up to 90 days, over 90 to 365 days, over 365 to 1,095 days, and over 1,095 days.
+The number of sampled agent-authored PRs per repository is grouped as 1, 2--10, 11--100, and more than 100.
+
+To show variation across repositories, the three proportions are also calculated separately for each repository within each group.
+Their distributions are displayed as empirical cumulative distribution functions.
+A repository can appear in more than one age group because its PRs may have been created at different repository ages.
+
+Group differences are estimated using linear probability models with group membership as the predictor.
+The models use standard errors clustered by repository to account for dependence among PRs from the same repository~\cite{cameronClusterRobustInference2015}.
+Differences are reported in percentage points with 95\% confidence intervals.
+
+For each repository characteristic, an F-test assesses whether the groups have equal proportions for each of the three measures.
+Holm correction is applied across the nine tests and separately across all group-to-reference comparisons~\cite{holmMultipleTestProcedure1979}.
+Groups with unknown characteristics are excluded from these tests.
+
 \section{Results}
 \label{results}
 

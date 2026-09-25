@@ -246,16 +246,6 @@ Among PRs with ownership metadata, 80.3\% target repositories owned by personal 
 \label{fig:repository_background}
 \end{figure}
 
-\subsection{Analysis subsets}
-\label{sec:analysis_subsets}
-
-After deduplication, the scoped corpus contains 325,523 agent-authored PRs, 29,808 human-authored PRs, and 1,206 bot-authored PRs. These groups form the common starting point for the analysis. 
-All downstream constructs are derived from reconstructed public PR timelines, but the unit of analysis differs by research question.
-RQ1 and RQ4 use PR-level denominators for entry and integration outcomes.
-RQ2 uses feedback-event and feedback-body denominators.
-RQ3 uses both PR-level pathway denominators and cycle-level denominators for latency and response measures.
-We state the exact denominators where each result appears.
-This design avoids comparing event-level percentages with PR-level percentages and keeps PRs without feedback in pathway and endpoint denominators while excluding them only from measures that require feedback, response, or endpoint timestamps.
 \subsection{PR Timeline Construction}
 \label{sec:method_timeline}
 

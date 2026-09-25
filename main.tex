@@ -399,56 +399,65 @@ Weighted-F1 averages category-level F1 scores according to their frequencies in 
 All outputs contained a valid category label.
 The selected configuration was then applied to the remaining feedback events.
 
-\subsubsection{RQ3: Feedback-Response Cycles}
+\subsubsection{RQ3: Revision}
 \label{sec:method_rq3_cycles}
 
-RQ3 asks whether commits follow feedback, how many cycles occur, how long they take, and how much code changes.
+RQ3 examines whether code commits follow feedback and how these changes unfold within a PR.
+The analysis uses the PR timelines defined in Section~\ref{sec:method_timeline} to group feedback events and subsequent commits into cycles.
+These cycles are constructed before applying the message-content filters used in RQ2.
 
 \runinhead{Blocks and cycles}
-A \emph{feedback block} is a contiguous run of feedback events.
-A new block begins after an intervening commit. 
-A \emph{response block} is the set of commits after a feedback block and before the next feedback block. 
-A \emph{feedback-response cycle} exists when a feedback block has at least one following commit in its response block.
-If no later commit shows, the block is feedback without a code response.
+Consecutive feedback events with no intervening commit form a \emph{feedback block}.
+The commits that follow this block, before the next feedback event, form its \emph{response block}.
+A feedback block and a response block containing at least one commit form one \emph{feedback-response cycle}.
+Multiple commits within the same response block count as one cycle.
+A feedback block with no subsequent commit does not form a cycle.
 
-Response-eligible commits occur after the PR is opened and before the PR is merged or closed. 
-We exclude routine merge artifacts, merge-button or merge-queue boundary commits, and commits at or after terminal merge/close. 
-Events are sorted by timestamp, event priority, and event ID. 
-At identical timestamps, feedback is ordered before commits, so same-time feedback followed by a commit can be counted as a zero-latency response.
+Only commits recorded after PR opening and before any recorded merge or closure are included.
+Commits whose messages match predefined merge, squash, or rebase patterns are also excluded to avoid counting these operations as revisions following feedback.
+The remaining commits and feedback events are ordered by timestamp.
+At identical timestamps, comments precede reviews, and both precede commits.
+Events with the same timestamp and type are ordered by their identifiers to ensure a consistent ordering.
+A commit with the same timestamp as the preceding feedback might hence form a cycle with zero waiting time.
 
-\runinhead{Pathway taxonomy}
-Each scoped PR receives one feedback-response pathway. 
-The pathway taxonomy is derived exclusively from the reconstructed PR timeline dataset. 
-The rules are mutually exclusive and exhaustive for scoped PR timelines.
-Each PR has no visible feedback, feedback without a later code response, one response cycle, multiple response cycles, or terminal feedback after the final code change.
+\runinhead{PR pathways}
+Prior work describes code review as an iterative process in which reviewer comments are followed by revisions~\cite{sadowskiModernCodeReview2018}.
+To characterize how this process unfolds in PR timelines, the pathway classification distinguishes whether feedback occurs and whether it is followed by one or multiple revision cycles.
+Cycle counts alone do not show whether further feedback appears after the last revision.
+The classification therefore also distinguishes PRs whose final feedback block follows the last included commit.
+These distinctions define five pathways, with each PR assigned to exactly one using the rules below.
 
-\begin{itemize}[leftmargin=1.3em, itemsep=0.15em, topsep=0.2em]
-\item \textit{No visible feedback}. No feedback block appears.
-\item \textit{Feedback without code response}. Feedback exists, but no later response-eligible commit follows.
-\item \textit{Single-feedback response cycle}. Exactly one feedback block is followed by a response block.
-\item \textit{Multi-feedback response cycle}. Two or more feedback blocks are followed by response blocks.
-\item \textit{Late feedback after final code change}. The final feedback block starts after the final response block.
-\end{itemize}
+\textit{No visible feedback}. The PR contains no feedback events.
+\textit{Feedback without code response}. Feedback is present, but no cycle is formed and the PR does not meet the late-feedback rule below.
+\textit{Single-feedback response cycle}. The PR contains exactly one cycle and does not meet the late-feedback rule.
+\textit{Multi-feedback response cycle}. The PR contains two or more cycles and does not meet the late-feedback rule.
+\textit{Late feedback after final code change}. The final feedback block follows the last included commit, with no subsequent commit.
 
-The late-feedback category takes precedence over the single- or multi-cycle count because it describes the PR's final state.
-A PR in this category may yet have earlier cycles.
+The late-feedback rule takes precedence over cycle count.
+PRs in this category may contain zero, one, or multiple earlier cycles.
 
-\runinhead{Cycle timing and code response}
-Cycle latency is the time from the end of a feedback block to the first commit in its response block. 
-Latency summaries use only cycles with a response commit. 
-Cycle times are skewed, so we report medians, IQRs, and upper percentiles.
+\runinhead{Cycle timing}
+Cycle latency is the elapsed time from the last feedback event in a feedback block to the first commit in its response block.
+Each cycle contributes one observation, so a PR with multiple cycles contributes multiple observations.
+Feedback blocks without a subsequent commit are excluded from latency summaries.
+The distribution is summarized using the median, interquartile range, and upper percentiles.
+A separate summary includes only cycles whose feedback blocks contain at least one event retained by the message filters in Section~\ref{sec:method_validation}.
+This subset uses the original cycle boundaries and latency values.
 
-We measure code-response size at two levels. 
-At the cycle level, we count response commits, changed lines, changed files, and changed lines per feedback event for each response block. 
-At the PR level, we split response-eligible commits into pre-feedback and post-feedback commits using the first feedback event.
-PRs without visible feedback, or without later response commits, remain in the PR-level denominator with zero post-feedback code response.
+\runinhead{Revision size}
+Prior work measures PR size using commit counts, changed lines, and changed files~\cite{gousiosExploratoryPullBased2014}.
+In this study, these measures can also describe revisions within each cycle and across each PR.
+For each cycle, commits are counted and changed lines and file counts are summed across its response block.
+Changed lines are calculated as additions plus deletions when both values are available.
+File counts come from the per-commit \texttt{changed\_files} field, so a file modified in multiple commits is counted more than once.
 
-We measure changed lines as additions plus deletions when both are available.
-Changed files come directly from GitHub's per-commit \texttt{changed\_files}.
-When a stat is missing, we leave it missing and report how often it occurs.
+For each cycle, total changed lines are also divided by the number of feedback events to describe change volume relative to feedback volume.
+For each PR, included commits are divided into those before and after its first feedback event.
+PRs without feedback or subsequent commits remain in the summaries with zero commits and changes after feedback.
 
-\runinhead{Response actors}
-For response blocks, we retain the committer GitHub accounts and other activities following feedback.
+\runinhead{Revision accounts}
+For each response block, GitHub accounts are extracted from the author fields of its commits.
+The committer field is used when no author account is available.
 
 \subsubsection{RQ4: Integration}
 \label{sec:method_taxonomy_rq4}

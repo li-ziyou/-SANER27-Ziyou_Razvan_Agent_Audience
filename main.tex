@@ -200,6 +200,7 @@ Bot & 1,206 & 882 & 509 \\
 \end{table}
 
 \subsection{Data Collection \& Structure}
+\label{sec:data_collection_structure}
 
 The dataset contains agent-, human-, and bot-authored GitHub PRs created between 2025-04-01 and 2026-01-31.
 PR actions and linked metadata were collected through the GitHub GraphQL API.
@@ -258,12 +259,9 @@ The first feedback event is the earliest event that meets the definition above. 
 \subsection{Baseline construction}
 \label{sec:baseline_construction}
 
-Baseline sets are constructed from the same study window as the agent PR corpus (2025-04-01 to 2026-01-31) and processed with the same canonicalization pipeline. For all author groups, each PR is mapped to a canonical key of the form \texttt{repo\_full\_name} \texttt{pr\_number}. When GraphQL pull-request identifiers are available, they are first aligned to this canonical key so that PR rows and PR-action rows can be joined consistently across source tables. After time-window filtering, duplicate PR rows are removed by canonical PR key, keeping the earliest open action for each PR.
+Human- and bot-authored PRs serve as references for feedback and integration in agentic contributions. Both groups were collected through the same GitHub GraphQL API procedure, including PR records and their associated events. They are distinguished using the author signals described in Section~\ref{sec:data_collection_structure}. Each PR is linked to its events by repository and PR number, with GraphQL PR identifiers mapped to this pair where available. The available human and bot baseline records span PR creation dates from 2025-06-01 to 2025-11-14. Within this period, duplicate records with the same repository and PR number are reduced to one record per PR, keeping the earliest recorded creation time. Table~\ref{tab:analysis_data_and_users} reports the resulting groups.
 
-The human baseline is drawn from the companion human PR corpus and is used only for cross-group comparison. The bot baseline is defined coarsely from normalized author logins that match common bot patterns, including explicit \texttt{[bot]} markers and dependency-update accounts such as Dependabot and Renovate. In this design, bot-authored PRs are grouped into a single bot baseline for cross-group comparison.
-
-The three author groups hence share the same study window, PR-key construction, date filtering, and deduplication pipeline.
-The cross-group analyses support the same-window comparison.
+These comparisons describe how feedback and integration patterns vary across agent-, human-, and bot-authored PRs. Across all three author groups, PR records are linked to events by repository and PR number and deduplicated by retaining the record with the earliest creation timestamp. The baselines provide context for the observed differences.
 
 \subsection{Human-Agent PR Workflow Model}
 \label{sec:method_workflow_model}

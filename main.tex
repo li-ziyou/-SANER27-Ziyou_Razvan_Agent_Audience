@@ -339,59 +339,65 @@ Bottom: PR shares by the first feedback provider's quartile, restricted to PRs w
 \subsubsection{RQ2: Feedback}
 \label{sec:method_rq2_feedback}
 
-RQ2 characterizes the feedback that appears after an agent-authored PR enters the PR thread.
-Feedback events consist of non-author PR-thread comments and reviews after PR opening.
-Each event retains its event type, actor, timestamp, and available text body.
-We report comments and reviews separately where useful because short comments, formal review bodies, and generated review reports can carry different kinds of feedback.
+RQ2 examines feedback events on agent-authored PRs after applying the message filters in Section~\ref{sec:method_validation}.
+Each feedback event is analyzed separately, so a PR can be associated with multiple feedback events.
+The recorded feedback type distinguishes two channels, Comment and Review.
+Within each channel, feedback is further grouped by provider type.
 
 \runinhead{Feedback actors}
-Each feedback event receives the refined actor class defined above.
-Accounts marked by the coarse detector but not safely separable by the refined rules remain \emph{unresolved agent/bot}.
-Missing or unrecognized actors remain \emph{unknown}.
-Unlike RQ1, which focuses on the first retained triager per PR, RQ2 summarizes all eligible feedback events.
-When the feedback actor is a matched human, we attach the public-footprint stratum defined in RQ1.
+Feedback providers are classified as Human, Agent, or Automation bot using the account classification described in Section~\ref{sec:method_rq1_entry}.
+The share of each provider type is calculated across all feedback events after filtering and separately for comments and reviews.
+For the separate calculations, the denominator is the number of comments or reviews, respectively.
 
-\runinhead{Syntax features}
-% ORIGINAL: Following work on code-review usefulness, review-comment classification, and review automation~\cite{rahmanPredictingUsefulnessCode2017,liAutomaticClassificationReview2017,goldmanWhatTypesCode2025,wesselDontDisturbMe2021,wesselEffectsAdoptingCode2020,wesselQualityGatekeepersInvestigating2022}, we extract deterministic body-form features from each available feedback body before interpreting semantic intent.
-Following work on code-review usefulness, review-comment classification, and review automation~\cite{rahmanPredictingUsefulnessCode2017,liAutomaticClassificationReview2017,goldmanWhatTypesCode2025,wesselDontDisturbMe2021,wesselEffectsAdoptingCode2020,wesselQualityGatekeepersInvestigating2022}, we extract deterministic body-form features from each available feedback body before assigning intent labels.
-These features capture body length, code grounding through fenced or inline code markers, structured packaging through Markdown bullets, numbered lists, tables, or summary-like sections, and boilerplate/status markers for CI, deployment, routing, helper, or administrative messages.
+Human feedback providers are matched to the public user profiles and assigned to the footprint quartiles defined in Section~\ref{sec:method_rq1_entry}.
+Feedback from human accounts without an available footprint score remains in the analysis and is reported separately.
 
-% ORIGINAL: \runinhead{Intent taxonomy}
-\runinhead{Intent taxonomy}
-% ORIGINAL: We construct a semantic intent taxonomy for PR-thread feedback following the human-in-the-loop LLM taxonomy workflow~\cite{shahUsingLargeLanguage2023}, which uses an initial taxonomy, LLM-assisted labeling, human validation, and full-corpus application.
-We construct an intent taxonomy for PR-thread feedback following the human-in-the-loop LLM taxonomy workflow~\cite{shahUsingLargeLanguage2023}, which uses an initial taxonomy, LLM-assisted labeling, human validation, and full-corpus application.
-Our initial taxonomy is seeded from prior work on modern code review and review-comment classification.
-Code review is known to support defect finding, maintainability discussion, knowledge transfer, and integration decisions~\cite{bacchelliExpectationsOutcomesChallenges2013,sadowskiModernCodeReview2018,mcintoshEmpiricalStudyImpact2016}.
-PR reviews and comments have also been classified by correctness, management, interaction, and other review functions~\cite{liAutomaticClassificationReview2017}.
-Recent work on useful or LLM-generated code-review comments motivates distinguishing actionable concerns from non-actionable or generated feedback~\cite{rahmanPredictingUsefulnessCode2017,goldmanWhatTypesCode2025}.
-% ORIGINAL:
-% Based on these sources and pilot inspection of our feedback bodies, we define seven primary intent labels used throughout the text and figures.
-Based on these sources and pilot inspection of our feedback bodies, we define seven primary intent labels for aggregate feedback summaries.
-They are \textit{Functional}, \textit{Maintainability}, \textit{Documentation}, \textit{Discussion}, \textit{Process}, \textit{Validation}, and \textit{Non-actionable}.
-\textit{Maintainability} covers refactoring and cleanup requests, \textit{Process} covers integration, CI, merge, and workflow coordination, and \textit{Validation} covers evidence, reproduction, test, or verification requests.
-Figures abbreviate labels only for space, such as \textit{Maint.}, \textit{Docs}, and \textit{Non-action}.
+\runinhead{Text Features}
+Prior work has examined textual features of review comments~\cite{rahmanPredictingUsefulnessCode2017} and identified verbosity and information presentation as concerns in bot communication~\cite{wesselDontDisturbMe2021}.
+Motivated by these studies, the analysis focuses on feedback length and format.
+Length is measured by word and line counts for messages with available, nonempty text.
+Format is characterized using text-matching rules for code-block markers, tables, lists, summary-like structures, and status-related expressions.
+Their frequencies and the distributions of feedback length are summarized by provider type, separately for comments and reviews.
 
-\runinhead{Intent labeling}
-We use the codebook for LLM-assisted labeling.
-Two human annotators independently labeled 141 randomly sampled feedback events using the same primary-label taxonomy.
-% ORIGINAL: After applying the edited disagreement table, 104 events had matching primary intent labels, yielding Cohen's $\kappa=0.683$, which indicates substantial agreement~\cite{cohenCoefficientAgreementNominal1960}.
-After applying the edited disagreement table, 104 events had matching primary intent labels, yielding Cohen's $\kappa=0.683$, which indicates substantial agreement~\cite{cohenCoefficientAgreementNominal1960}.
-The remaining 37 disagreements are excluded from the consensus-gold evaluation.
-% ORIGINAL:
-% For the full-corpus labeling, we use the selected scalable setup of \texttt{openai/gpt-4o-mini} with batch size 20 and two examples per label.
-% On 29 held-out consensus rows, this setup achieves 0.690 accuracy, 0.577 macro-F1, 0.676 weighted-F1, and produces no invalid outputs.
-% We apply this setup to the remaining eligible feedback events.
-For the full-corpus labeling, we use the selected scalable setup of \texttt{openai/gpt-4o-mini} with batch size 20 and two examples per label.
-% ORIGINAL: On 29 held-out consensus rows, this setup achieves 0.690 accuracy, 0.577 macro-F1, 0.676 weighted-F1, and produces no invalid outputs.
-For this primary-intent labeling task, the 29-row held-out consensus set yields 0.690 accuracy, 0.577 macro-F1, 0.676 weighted-F1, and no invalid outputs.
-% ORIGINAL:
-% Because this held-out set is small, intent labels are used as descriptive strata rather than as standalone evidence for causal or quality claims.
-% ORIGINAL: Intent labels are used as an aggregate descriptive layer: they summarize what retained feedback appears to ask for, but they do not define entry, cycle, pathway, revision, or integration measures.
-These labels are used only as an aggregate descriptive layer: they summarize what retained feedback appears to ask for, but they do not define entry, cycle, pathway, revision, or integration measures.
-The primary workflow claims rely on event type, actor class, timestamps, commits, and endpoint metadata.
-% ORIGINAL: Given the small held-out set, intent-stratified contrasts should be read as descriptive patterns rather than standalone evidence about feedback quality or causal effects.
-Given the small held-out set, intent-stratified contrasts should be read as descriptive patterns rather than standalone evidence about feedback quality or causal effects.
-We apply this setup to the remaining eligible feedback events.
+\runinhead{Intent Taxonomy}
+To describe what the feedback concerns, RQ2 groups messages by their primary intent.
+Prior research has used comment categories to compare human-written and LLM-generated code reviews~\cite{goldmanWhatTypesCode2025}.
+Motivated by this work, the taxonomy distinguishes seven categories: \textit{Functional}, \textit{Maintainability}, \textit{Documentation}, \textit{Discussion}, \textit{Process}, \textit{Validation}, and \textit{Non-actionable}.
+Each feedback event receives one primary label.
+
+\textit{Functional} concerns incorrect or missing behavior.
+\textit{Maintainability} concerns code clarity and structure.
+\textit{Documentation} covers requests to change documentation or explanatory text.
+\textit{Process} covers build, CI, deployment, and integration requests.
+\textit{Validation} covers requests for tests, reproduction steps, or other evidence.
+\textit{Discussion} covers questions and clarification without a specific change request.
+\textit{Non-actionable} covers approvals, acknowledgments, and other messages without a request for further action or clarification.
+Generated feedback is classified by its content using the same categories.
+For messages containing multiple requests, the primary label represents the dominant request.
+
+\runinhead{Intent Labeling}
+Human annotation supports the development and assessment of the LLM classifier.
+Prior work has also assessed LLM-based review classification using a manually labeled sample of 100 comments~\cite{goldmanWhatTypesCode2025}.
+In this study, sampling covers different PR author types, feedback providers, merge states, and feedback and revision patterns.
+Up to four events were selected from each stratum, producing 187 candidates.
+Selection within strata favored shorter messages with explicit requests and excluded status-only messages.
+A stratified allocation of approximately 70\% of these candidates, with rounding within strata, yielded 141 events for human annotation.
+
+Two annotators independently assigned primary intent labels to the 141 events.
+They then discussed disagreements and revised labels for 41 events.
+After this discussion, their labels agreed on 104 events, with Cohen's $\kappa=0.683$.
+The remaining 37 events were unresolved and excluded from the reference set used for classifier development and evaluation.
+Following the existing split, the reference set contained 75 development events and 29 evaluation events.
+
+The development set supplied examples for the classification prompt.
+Model and prompt configurations were compared on the 29-event evaluation subset.
+The selected configuration uses \texttt{gpt-4o-mini}, two examples per category, and batches of 20 feedback events.
+None of the evaluation events appears among the prompt examples.
+The model returns one primary intent label for each event.
+On the evaluation subset, this configuration matched the human reference labels for 20 of 29 events, yielding 0.690 accuracy and 0.676 weighted-F1.
+Weighted-F1 averages category-level F1 scores according to their frequencies in this subset.
+All outputs contained a valid category label.
+The selected configuration was then applied to the remaining feedback events.
 
 \subsubsection{RQ3: Feedback-Response Cycles}
 \label{sec:method_rq3_cycles}

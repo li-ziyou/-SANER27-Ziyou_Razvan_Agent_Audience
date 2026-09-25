@@ -280,41 +280,56 @@ RQ1 examines which PRs receive feedback and who provides the first feedback. For
 \subsection{Taxonomy Construction}
 \label{sec:method_taxonomy_construction}
 
-\subsubsection{RQ1: Entry}
+\subsubsection{RQ1: Participation}
 \label{sec:method_rq1_entry}
 
-\runinhead{Interaction Sequence}
-To characterize how collaboration begins, we extract entry events from PR timelines.
-For each PR, raw entry is the earliest non-author PR-thread comment or review after opening.
-Retained entry applies the feedback filter described below before selecting the first retained event.
-Commits are not treated as entry feedback and are reserved for code-response analyses.
+\runinhead{Feedback and Participants}
+RQ1 examines how many PRs receive feedback and who provides the first feedback.
+The share of PRs receiving feedback is calculated before and after removing empty messages and specified status or boilerplate messages, such as deployment notices and CI summaries.
+Section~\ref{sec:method_validation} details these filtering rules.
+Both calculations use all PRs in each author group as the denominator and count a PR if it has at least one feedback event.
+After filtering, the earliest remaining feedback event identifies the first feedback provider for each PR.
 
-\runinhead{Entry Measures}
-The analysis reports raw and retained entry rates and first retained entry actor.
+The first feedback provider is classified as Human, Agent, or Automation bot using the signals in Section~\ref{sec:data_collection_structure}.
+The automated rules left 15 accounts unclassified.
+Manual inspection assigned these accounts to Human (10), Agent (1), and Automation bot (4).
+Only the first feedback event remaining after applying the message-filtering rules in Section~\ref{sec:method_validation} is used, so each PR contributes to only one category.
+Category shares use all PRs with at least one remaining feedback event within each author group as the denominator.
 
-\runinhead{Engaging Developers and Coverage}
-An engaging developer is defined as any account that performs at least one human PR action in an agent-authored PR during the study window, for example, commenting, reviewing, committing, or creating an issue. 
-Accounts identified as non-human automation (bots) or coding agents are excluded using the tracking signals in Table~\ref{tab:dataset_overview}. 
-The packaged user table contains 58,262 accounts with account-creation timestamps and contribution summaries of the past year preceding data collection, of which 56,190 have nonzero public contribution volume.
-For first-human-triager footprint analyses, we join PR-thread accounts to this public-profile table and report unmatched accounts as no-metadata.
+\runinhead{Human Participant Profiles}
+For agent-authored PRs whose first feedback after message filtering comes from a human, the provider is matched to the public user profiles introduced in Section~\ref{sec:data_collection_structure}.
+Matching uses GitHub usernames converted to lowercase with surrounding whitespace removed.
+Matched profiles provide account-creation dates and public contribution counts for the account measures defined below.
+PRs without the required profile data remain in the feedback analysis but are excluded from comparisons based on these measures.
 
 \runinhead{Public GitHub Footprint Score}
-Following large-scale GitHub profiling work~\cite{baoLargeScaleStudy2021}, we construct an empirical public GitHub footprint score for matched first human responders from two public profile signals, account tenure and cumulative public contribution volume.
-For each user $u$, $\mathrm{tenure}(u)$ is the number of days between \texttt{created\_at} and a fixed reference time, and $\mathrm{contrib}(u)=\#\mathrm{commits}(u)+\#\mathrm{PRs}(u)+\#\mathrm{reviews}(u)+\#\mathrm{issues}(u)$.
-We apply $\log(1+x)$ to both components, winsorize each transformed component at the 5th and 95th percentiles, and min--max normalize to $[0,1]$.
-The main specification is an equal-weight score $\mathrm{footprint}(u)=0.5\,\widehat{\mathrm{tenure}}(u)+0.5\,\widehat{\mathrm{contrib}}(u)$.
+The public GitHub footprint score combines account age and public contribution counts.
+For each user $u$, $\mathrm{tenure}(u)$ is the number of days from account creation to the latest user-profile collection timestamp.
+Public contribution volume is defined as
+$\mathrm{contrib}(u)=\#\mathrm{commits}(u)+\#\mathrm{PRs}(u)+\#\mathrm{reviews}(u)+\#\mathrm{issues}(u)$,
+using the one-year window recorded in the user-profile dataset.
+Both components are transformed using $\log(1+x)$ and capped at their 5th and 95th percentiles.
+The transformed components are then min--max normalized to $[0,1]$ across all eligible user profiles.
+The resulting values, $\widehat{\mathrm{tenure}}(u)$ and $\widehat{\mathrm{contrib}}(u)$, receive equal weights:
+\[
+\mathrm{footprint}(u)
+=0.5\,\widehat{\mathrm{tenure}}(u)
++0.5\,\widehat{\mathrm{contrib}}(u).
+\]
 
-\runinhead{Footprint Strata}
-We convert the continuous score into empirical quartiles \textbf{Q1-4 footprint} within the covered user subset.
-For footprint-stratified PR-level analyses, each PR receives the stratum of its first matched non-author human responder.
-PRs without a matched responder remain unlabeled and are excluded from these summaries.
+\runinhead{Footprint Groups}
+Score quartiles are calculated among human participants in agent-authored PRs with available scores.
+The 25th, 50th, and 75th percentiles define four groups, Q1 to Q4, from the lowest to the highest scores.
+For PRs whose first feedback comes from a human with an available score, the PRs are grouped by that person's score quartile.
+Figure~\ref{fig:rq1_human_footprint} shows the score distribution and the share of these PRs in each group.
 
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\columnwidth]{figures/fig_rq1_footprint_score_strip.pdf}
   \vspace{0.12em}
   \includegraphics[width=\columnwidth]{figures/fig_rq1_human_triager_quartiles.pdf}
-  \caption{Human footprint score quartiles and scoreable first-human triagers.}
+  \caption{Top: human participants' footprint scores and quartile boundaries.
+Bottom: PR shares by the first feedback provider's quartile, restricted to PRs whose first feedback after filtering comes from a human with an available score.}
   \Description{Two vertically stacked plots.
   The score-distribution plot is a quartile strip of equal-weight account footprint scores from zero to one with density marks and quartile cut points near 0.56, 0.73, and 0.86.
   The first-retained-human-triager plot is a single stacked percentage bar for scoreable first retained human triagers, ordered from Q1 on the left to Q4 on the right.}

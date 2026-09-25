@@ -266,20 +266,14 @@ These comparisons describe how feedback and integration patterns vary across age
 \subsection{Human-Agent PR Workflow Model}
 \label{sec:method_workflow_model}
 
-Prior work studies modern code review, PR mining, automation in PR threads, and agent-authored PRs through signals such as reviews, code changes, latency, and merge outcomes.
-We connect these signals in one PR trajectory and use it to organize the four RQs and the measures below.
+The PR timelines support four research questions about participation, feedback, revision, and integration (Figure~\ref{fig:method_rq_workflow_timeline}). RQ1 examines which PRs receive feedback and who provides the first feedback. For PRs with feedback, RQ2 examines its channels, forms, and content. RQ3 then examines code changes after feedback, including their timing, authors, and size. RQ4 relates these interaction patterns to whether PRs are merged, closed without merging, or still open at data collection. Together, these four aspects organize the analysis and characterize differences in how PRs unfold.
 
-We model each PR as a Human-Agent PR workflow with four stages.
-They are \emph{Entry}, \emph{Feedback}, \emph{Feedback-response Cycle}, and \emph{Integration}.
-The stages are grounded in GitHub PR events. 
-Entry begins with the PR \texttt{Open} event and tracks whether a later non-author PR-thread entry appears and who first triages the PR.
-% ORIGINAL: Feedback uses PR \texttt{Comment} and \texttt{Review} events from humans, agents, or automation bots, and is characterized by actor, body form, and semantic intent.
-Feedback uses PR \texttt{Comment} and \texttt{Review} events from humans, agents, or automation bots, and is characterized by actor, body form, and feedback intent.
-Feedback-response Cycle links feedback blocks to later response-eligible \texttt{Commit} events, measuring response timing, response actors, and code-change magnitude. 
-Integration uses merge and close metadata to classify the PR as merged, closed without merge, or still open at data collection.
-
-
-
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig_method_rq_workflow_timeline.png}
+    \caption{Overview of the four research questions and an example PR timeline. The upper panel shows the research questions of participation, feedback, revision, and integration at their relative positions in a PR timeline, where feedback and revision may repeat. The lower panel illustrates feedback, revision, and closure in PR \href{https://github.com/microsoft/testfx/pull/5633}{microsoft/testfx\#5633}.}
+    \label{fig:method_rq_workflow_timeline}
+\end{figure*}
 
 \subsection{Taxonomy Construction}
 \label{sec:method_taxonomy_construction}

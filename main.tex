@@ -249,22 +249,11 @@ Among PRs with ownership metadata, 80.3\% target repositories owned by personal 
 \subsection{PR Timeline Construction}
 \label{sec:method_timeline}
 
-\runinhead{PR Timeline and Action Types}
-For each PR, we reconstruct an ordered public timeline by merging \texttt{Open}, \texttt{Comment}, \texttt{Review}, and \texttt{Commit} actions with normalized actor logins and UTC timestamps.
-The first \texttt{Open} action defines the opening time and normalized PR-author login. 
-The resulting timeline is the ordered action sequence used through the paper.
+Feedback refers to recorded \texttt{Comment} or \texttt{Review} events posted by an account other than the PR author, with timestamps strictly later than the PR opening time. These events are grouped as feedback because PR comments and reviews can guide subsequent changes by coding agents~\cite{liAIDevStudyingAICodingAgents2026,github2025copilotReviewExperience}.
 
-The first entry event is defined as the earliest \texttt{Comment} or \texttt{Review} action from a non-author whose timestamp is strictly later than the opening time.
-We use \emph{entry} for this first PR-thread contact so that feedback comments and reviews are not conflated with later code responses.
-Commits are handled separately as response-eligible code activity in RQ3.
-Actions authored by the PR author are excluded so that self-follow-up does not count as an entry.
-When multiple candidate actions share the same timestamp, ties are broken in the order \texttt{Comment} to \texttt{Review}.
-This rule yields a deterministic first-entry label when multiple conversational actions occur at the same recorded time.
+For each PR, the timeline combines \texttt{Open}, \texttt{Comment}, \texttt{Review}, and \texttt{Commit} records linked to that PR. Each record identifies the account, event type, and timestamp. The earliest \texttt{Open} record identifies the PR opening time and author account. Records are ordered by timestamp, with code commits recorded separately from feedback.
 
-The same rule is applied consistently to agent-, human-, and bot-authored PRs in the baseline comparison. 
-PRs without candidate entry events are excluded from first-entry actor measures but kept in the full PR corpus for pathway analyses.
-
-The lower panel of Figure~\ref{fig:method_rq_workflow_timeline} illustrates the PR-timeline representation used throughout the paper and shows the reconstruction procedure on a representative PR.
+The first feedback event is the earliest event that meets the definition above. Comments and reviews posted by the PR author do not qualify, but the author's later code commits remain in the timeline. When a \texttt{Comment} and a \texttt{Review} have the same timestamp, the \texttt{Comment} is selected using a fixed tie-breaking rule. Measures of who provides the first feedback include only PRs with feedback.
 
 \subsection{Baseline construction}
 \label{sec:baseline_construction}
@@ -291,17 +280,8 @@ Feedback uses PR \texttt{Comment} and \texttt{Review} events from humans, agents
 Feedback-response Cycle links feedback blocks to later response-eligible \texttt{Commit} events, measuring response timing, response actors, and code-change magnitude. 
 Integration uses merge and close metadata to classify the PR as merged, closed without merge, or still open at data collection.
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/fig_method_rq_workflow_timeline.pdf}
-  \caption{Human-agent PR workflow model (upper) and example PR timeline for GitHub PR microsoft/testfx/pull/5633 (lower). Bot labels are automation bots.}
-  \Description{Two-part figure.
-  The upper panel shows an agent-authored pull request moving from open and entry through feedback and response states to an endpoint, with RQ1 through RQ4 mapped to the stages.
-  The lower panel shows an example pull request timeline with open, commits, reviews, comments, response commits, and closure.}
-  \label{fig:method_rq_workflow_timeline}
-\end{figure*}
 
-Figure~\ref{fig:method_rq_workflow_timeline} maps the four RQs onto this model, distinguishing PRs that share an endpoint but differ in triage, feedback, response, and revision.
+
 
 \subsection{Taxonomy Construction}
 \label{sec:method_taxonomy_construction}

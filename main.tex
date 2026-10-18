@@ -26,6 +26,10 @@
 \newcommand{\TODO}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 \providecommand{\Description}[1]{}
 \newcommand{\runinhead}[1]{\noindent\textbf{#1.}\ }
+% BEGIN WORKFLOW CONTENT REVIEW MACROS
+\newcommand{\revnote}[3]{\par\smallskip{\small\color{red}\noindent\textbf{[#1: #2]} #3\par}\smallskip}
+\newcommand{\revproposal}[2]{\par\smallskip{\color{red}\noindent\textbf{[#1: Suggested wording]} #2\par}\smallskip}
+% END WORKFLOW CONTENT REVIEW MACROS
 % REJECTED LAYOUT COMPRESSION: \setlength{\textfloatsep}{7pt plus 1pt minus 2pt}
 % REJECTED LAYOUT COMPRESSION: \setlength{\dbltextfloatsep}{7pt plus 1pt minus 2pt}
 % REJECTED LAYOUT COMPRESSION: \setlength{\floatsep}{6pt plus 1pt minus 2pt}
@@ -68,19 +72,26 @@ Existing evaluations largely reduce agent-authored PRs to a single endpoint, i.e
 % Only 26.6\% of agent-authored PRs receive visible feedback, and retained review-relevant feedback remains 10.3--13.3\% across filtering boundaries (10.5\% under the main definition). When retained feedback appears, first engagement is split between humans (50.0\%) and agents (47.4\%). These results show that merge rate or review presence collapses distinct workflows, and that agent-authored PRs should be evaluated across feedback entry, actor, response, revision, and integration.
 Our analysis shows that most agent-authored PRs never enter substantive review at all, and when they do, the reviewer is nearly as likely to be another agent as a human, meaning first-line triage of agent-generated code is itself increasingly automated. Decomposing PRs into workflow pathways further reveals that the vast majority follow one of two shallow trajectories (no feedback or feedback with no code response), while the minority that undergo iterative revision behave in systematically different, more consequential ways. Interestingly, the PRs with the cleanest-looking review outcomes are often those with the least actual iteration, suggesting that visible approval signals can mask an absence of scrutiny rather than confirm its presence. These findings show that merge rate and review presence are poor proxies for how agent-authored contributions are actually vetted and argue for treating PR-thread workflow signals as first-class evaluation criteria for coding agents.
 \end{abstract}
+\revnote{R01}{REWRITE: abstract}{Retain the workflow motivation and headline coverage. Replace the inference that missing visible feedback means no substantive scrutiny with a statement about the collected public record. Add one sentence explaining what the content layer reveals inside the same pathway. The current 94-group finding is an exploratory GPT-6 result, not a final headline. Refresh abstract numbers and conclusions only after the final analysis snapshot.}
+
 
 \begin{IEEEkeywords}
 AI Agents, Pull Requests, Code Review, HCI
 \end{IEEEkeywords}
+\revnote{R00}{Reading guide: retain the workflow paper}{Red text is an author-review plan, not a completed revision. Keep the title, four RQs, workflow model, and existing process context. Add a content layer linking specific requirements, reported grounds, and explicit later handling. Black text remains the current baseline. Suggested wording is shown in red; results marked pending must not enter the abstract or contributions as established findings.}
+
 
 \section{Introduction}
+\revnote{R02}{MODIFY: knowledge gap}{Preserve the repository-facing PR setting. Replace the red endpoint-only statement below: the cited literature already examines review loops and validation. State the remaining question as the content of interaction within a workflow. Put the closest-work distinction here, rather than leaving it to the end of Related Work.}
+\revproposal{R02}{The study examines agent-authored PRs as public review workflows. Alongside participation, feedback, subsequent activity, and integration, a content analysis links stated requirements to reported grounds and later assessments. This allows records with the same workflow pathway to be compared in terms of what participants explicitly address and evaluate.}
+
 
 Coding agents are moving from local completion and chat assistance toward repository-facing tools that can plan tasks, edit multiple files, run checks, and open pull requests (PRs) on GitHub~\cite{liRiseAITeammates2025a,treudeHowDevelopersInteract2025,chenCodeMeMe2025}.
 % This shift changes the unit at which coding-agent work becomes accountable: after an agent produces a patch, that patch must pass through the repository's PR workflow before it becomes project state.
 This shift relocates where agent work becomes accountable because a patch produced by an agent is not project state until it passes through the repository's PR workflow.
 The PR thread is therefore the gate at which human developers and an agent's output actually meet.
 
-Yet we still evaluate that output almost entirely by its endpoint.
+\textcolor{red}{Yet we still evaluate that output almost entirely by its endpoint.}
 % Prior coding-agent evaluations and recent studies of agent-authored PRs have measured task completion, benchmark performance, code-change characteristics, PR descriptions, testing, security, acceptance, and merge outcomes~\cite{wangSurveyLargeLanguage2024,liangSWEBenchIllusionWhen2025a,watanabeUseAgenticCoding2025,watanabeHowAICoding2026,popescu2026autonomous,ogenrwotHowAICoding2026,haqueAutonomousAgentsContribute2026,siddiqSecurityAgeAI2026,yoshiokaLetsMakeEvery2026,nachumaWhenAITeammates2026}.
 % ORIGINAL:
 % Coding-agent benchmarks and recent studies of agent-authored PRs report task completion, benchmark accuracy, code-change characteristics, testing, security, and above all, acceptance and merge rates~\cite{wangSurveyLargeLanguage2024,liangSWEBenchIllusionWhen2025a,siddiqSecurityAgeAI2026,yoshiokaLetsMakeEvery2026,nachumaWhenAITeammates2026}.
@@ -114,6 +125,9 @@ It is a PR-level reconstruction of how entry, feedback, actor, post-feedback cod
 % We analyze 325,523 repository-visible marked agent-authored PRs on GitHub from 2025--2026, with 29,808 human-authored and 1,206 bot-authored same-window PRs used as descriptive workflow context. Our analysis is guided by four research questions:
 We assemble a large-scale, same-window corpus of 325,523 agent-authored PRs from 2025-04-01 to 2026-01-31, together with 29,808 human- and 1,206 bot-authored PRs as same-window context, and link each PR to its comments, reviews, commits, actor metadata, and outcome.
 Four research questions (RQ) drive our analysis.
+\revnote{R03}{KEEP structure; EXTEND RQ2--RQ4}{Keep four RQs. In RQ2, add what requirements and grounds appear. In RQ3, add explicit textual associations and subsequent support, challenge, clarification, and modification reports. In RQ4, compare these content patterns within the same pathway and integration state. The three content questions are subanalyses, not a second parallel set of RQs. Commit timing remains an activity measure.}
+\revproposal{R03}{RQ2: What feedback is provided, by whom, and what requirements, claims, and grounds does it contain? RQ3: What subsequent activity follows feedback, and which later messages explicitly address the same matter? RQ4: How do workflow pathways and their assessment content relate descriptively to integration outcomes?}
+
 \begin{itemize}
     \item \textbf{RQ1 (Entry).} How often do agent-authored PRs enter PR-thread interaction, and who enters first?
     % ORIGINAL: \item \textbf{RQ2 (Feedback).} Where is feedback delivered, who provides it, and what syntax and intent does it carry?
@@ -141,6 +155,9 @@ Tellingly, late-feedback PRs, i.e., those whose final thread event is approval-l
 % PAGE-FIT ORIGINAL: These findings argue that coding-agent evaluation should move beyond acceptance and report PR-thread workflow signals (e.g., feedback entry, retained feedback, first-entry actor, feedback body form, feedback intent, response timing, post-feedback revision, and integration endpoint) as distinct dimensions rather than collapsing them into pass rate, review presence, or merge rate.
 These findings argue that coding-agent evaluation should report PR-thread workflow signals, including feedback entry, retained feedback, first-entry actor, feedback body form, feedback intent, response timing, post-feedback revision, and integration endpoint, instead of reducing them to pass, review, or merge labels.
 Our contributions are as follows.
+\revnote{R04}{MODIFY: contribution 2 and 3}{Keep the corpus contribution and workflow representation. Extend contribution 2 with source-grounded content associations; rewrite contribution 3 around the concrete empirical distinctions these associations reveal. More labels or more annotated PRs are not a separate contribution. Conditional refinement remains in Discussion until its task-specific validation and broader coverage are established.}
+\revproposal{R04}{The workflow representation is extended with explicit links among stated requirements, reported grounds, and subsequent assessments. The resulting analysis examines content differences within the same process pathway and integration state.}
+
 \begin{enumerate}
     \item \textbf{In-the-wild PR workflow corpus.} We construct a large-scale, same-window dataset linking agent-authored PRs, human PRs, PR-thread comments, feedback bodies, actor metadata, and integration outcomes.
     % ORIGINAL: The accompanying repository provides the script for analyses and a 10\% random sample of the dataset for verification, and the full dataset will be released upon acceptance.
@@ -200,6 +217,8 @@ Bot & 1,206 & 882 & 509 \\
 \end{table}
 
 \subsection{Data Collection \& Structure}
+\revnote{R05}{ADD: annotation coverage and provenance}{Keep the corpus and existing repository-context figure. Add a coverage table for the content analysis: the frozen 18 October snapshot has 318,748 GPT-6-annotated PRs, with 318,187 unsegmented PRs in the association analysis and 561 segmented PRs outside that main relation scope. Report failures, unfinished records, and no-text records explicitly. These are staged figures and must be replaced from one final snapshot. Do not present completion order as probability sampling.}
+
 \label{sec:data_collection_structure}
 
 The dataset contains agent-, human-, and bot-authored GitHub PRs created between 2025-04-01 and 2026-01-31.
@@ -338,6 +357,8 @@ Bottom: PR shares by the first feedback provider's quartile, restricted to PRs w
 
 \subsubsection{RQ2: Feedback}
 \label{sec:method_rq2_feedback}
+\revnote{R06}{ADD: content layer and its denominator}{After the existing feedback definition, add requirements, evidence demands, completion claims, specific reports/artifacts, and assessments, with exact quotes and explicit association rules. Distinguish a posting account from an explicitly attributed producer. The content source includes descriptions and author messages as well as discussion: do not silently redefine the non-author feedback denominator or apply its boilerplate exclusions to every evidence source. Compress Text Features and the footprint split to make space.}
+
 
 RQ2 examines feedback events on agent-authored PRs after applying the message filters in Section~\ref{sec:method_validation}.
 Each feedback event is analyzed separately, so a PR can be associated with multiple feedback events.
@@ -401,6 +422,9 @@ The selected configuration was then applied to the remaining feedback events.
 
 \subsubsection{RQ3: Revision}
 \label{sec:method_rq3_cycles}
+\revnote{R07}{CLARIFY: temporal activity versus explicit response}{Retain the cycle construction as a temporal descriptor. Use subsequent commit activity where semantic response has not been checked. Add a separate textual-link method for messages that explicitly address the same request or ground. Record modification claims as reports, not verified fixes. Validate text links and source quotation; code-diff verification is outside this research question.}
+\revproposal{R07}{A temporal cycle records that commit activity followed feedback. A content association records that a later message explicitly addresses the same stated matter. These measures describe different parts of the visible workflow. Modification reports are analyzed as statements in the discussion.}
+
 
 RQ3 examines whether code commits follow feedback and how these changes unfold within a PR.
 The analysis uses the PR timelines defined in Section~\ref{sec:method_timeline} to group feedback events and subsequent commits into cycles.
@@ -490,6 +514,8 @@ For blocks containing reviews, merge proportions are further summarized by the r
 
 \subsection{Validation and Robustness}
 \label{sec:method_validation}
+\revnote{R08}{ADD: validation of the new annotation task}{Retain the existing feedback-filter checks. Add exact quote/event-ID validation and tests of the new content-association fields. Existing human labels cover compatible request/link tasks only; they do not establish the accuracy of condition correspondence. Development and previously inspected references are not fresh holdouts. Primary results use GPT-6 annotations consistently; available source reviews are a sensitivity check, not separate study groups. Preserve missing/uncertain cases.}
+
 
 \runinhead{Retained-feedback sensitivity}
 We evaluate four feedback boundaries.
@@ -515,6 +541,8 @@ Because open or without-close endpoints may reflect the collection boundary, we 
 Across the main and sensitivity summaries, proportions are reported with counts and denominators, with Wilson or difference intervals for selected actor, syntax, and endpoint contrasts in the artifact.
 
 \runinhead{Repository characteristics}
+\revnote{R09}{KEEP and EXTEND existing context analysis}{This manuscript already reports ownership, repository age, sampled PR volume, clustered inference, and Holm correction. Retain those analyses. Extend context checks to the content layer and report overlap coverage. The exploratory 841-repository/7,110-PR matched comparison is a sensitivity analysis, not evidence that one actor is better. Prefer same-repository, same-pathway content contrasts for the central argument.}
+
 To examine how workflow patterns vary across repositories, agent-authored PRs are grouped by repository ownership, repository age at PR creation, and the number of sampled PRs from each repository.
 Within each group, the analysis calculates the proportions of PRs with visible feedback, at least one feedback-response cycle, and a recorded merge.
 
@@ -538,6 +566,8 @@ Groups with unknown characteristics are excluded from these tests.
 \label{results}
 
 \subsection{RQ1: Entry}
+\revnote{R10}{KEEP: workflow overview; COMPRESS profile detail}{Retain feedback coverage and first-participant results as the setting for the rest of the paper. Use visible or retained feedback rather than inferring absence of scrutiny. Move detailed footprint comparisons to supplementary material unless they explain a new content result; account age and contribution volume are not expertise measures.}
+
 \label{sec:rq1_results}
 
 \runinhead{Entry denominators}
@@ -565,6 +595,8 @@ Thus, among the 53.9\% of first-human retained-entry PRs with scoreable metadata
 \FloatBarrier
 
 \subsection{RQ2: Feedback}
+
+\revnote{R11}{ADD results: requirements and reported grounds}{Keep channel and provider summaries, but reduce the length/format panels. Add a compact table distinguishing requests, completion claims, reports/artifacts, and assessments, with PR and item denominators separate. A specific report is inspectable text, not a reproduced result. Show how a requirement and its associated material are identified. Condition-level correspondence counts remain PENDING.}
 \label{sec:rq2_results}
 
 \runinhead{Feedback channels and syntax features}
@@ -666,6 +698,8 @@ Figures~\ref{fig:rq2_feedback_body_syntax} and~\ref{fig:rq2_feedback_actor_inten
 Intent differences between comments and reviews are smaller.
 
 \subsection{RQ3: Feedback-response Cycles}
+\revnote{R12}{ADD results: what later messages address}{Keep a compact pathway and timing summary. Add explicit textual response patterns: support, challenge, interpretation, clarification, and reported further action. Existing human scope adjudication distinguishes same-request links from other activity in the same repair process. Do not turn nearest-message recovery into commit correctness. If a later event is unlinked, report the unknown association rather than no response.}
+
 \label{sec:rq3_results}
 
 \runinhead{Workflow pathway composition}
@@ -735,6 +769,8 @@ Many raw-visible-feedback PRs have no measured post-feedback code response, whil
 \end{figure}
 
 \subsection{RQ4: Integration}
+\revnote{R13}{ADD results: same pathway, different assessment content}{Keep integration as descriptive context. Add a within-pathway and within-outcome content comparison. The current GPT-6 snapshot finds 94 groups with both support-only and challenge-only PRs after matching repository, pathway, outcome, discussion stratum, event-count bin, and material/claim presence. Check source associations and sensitivity before promoting this to a final result; do not imply that the histories are identical or that challenges were unresolved at merge.}
+
 \label{sec:rq4_results}
 
 \runinhead{Merge outcomes over the entry-cycle composition}
@@ -814,6 +850,9 @@ Together, Figures~\ref{fig:results_integration_by_pathway} and~\ref{fig:results_
 \FloatBarrier
 
 \section{Discussion}
+\revnote{R14}{REFOCUS: explain the workflow distinctions}{Discuss what content associations make observable beyond counts and timelines. Conditional refinement can be illustrated by inspector PR 511 and libgooey PR 48, where participants report different results under different conditions. The 207 same-material support/challenge PRs are candidates, not 207 validated conditional refinements. Keep this as interpretation until condition coding is validated; deployment success is not confirmation of requested UI behavior.}
+\revproposal{R14}{A workflow pathway locates activity in the PR process. Explicit content associations add what participants claim, what grounds they make available, and how those grounds are subsequently treated. Together, these views support a more precise description of public review activity.}
+
 \label{discussion}
 
 % REJECTED COMPRESSION:
@@ -843,6 +882,8 @@ Integration should therefore be read together with the preceding pathway to see 
 
 \subsection{Threats to Validity and Future Work}
 \label{sec:threats_validity}
+\revnote{R15}{UPDATE scope and uncertainty}{Keep the existing repository and visibility boundaries. Add staged annotation coverage, new-task validation, edited-text ordering, missing links, and cross-chunk limits. Textual assessment, reported revision, and merge status do not establish implementation correctness. Do not make a causal claim about the effect of humans or agents from the matched discussion comparison.}
+
 
 % REJECTED COMPRESSION:
 % The corpus prioritizes precision and repository-visible signals.
@@ -898,6 +939,8 @@ The findings are most directly informative for public GitHub repositories during
 Future work can connect these workflows to downstream maintenance signals and richer IDE, chat, CI, and agent-runtime traces.
 
 \section{Related Work}
+\revnote{R16}{UPDATE closest-work comparison}{Keep useful prior workflow studies and move the concrete distinction into the Introduction. Add verified references to Peralta et al. (arXiv:2605.22534), Peng et al. (arXiv:2610.03969), Selvanayagam and Ghaleb (ESEM 2026, DOI 10.4230/LIPIcs.ESEM.2026.75), and Davis et al. (arXiv:2607.01087). Peng already examines metric--optimization correspondence; general claims that validation needs evidence or that judgment matters are not the new contribution. Differentiate the observed target-linked handling within workflows.}
+
 \label{sec:related_work}
 
 % REJECTED COMPRESSION:
@@ -968,9 +1011,11 @@ This paper complements that cluster by reconstructing raw and retained feedback 
 
 \section{Conclusions}
 \label{conclusion}
+\revnote{R17}{REWRITE after results are frozen}{Keep the workflow takeaway. Replace the red paragraph below, including rubber-stamped and genuinely revised, with a claim limited to visible activity and explicit content. Conclude with the strongest validated within-workflow distinction. Do not add conditional-refinement prevalence, code correctness, or reviewer-effort benefits before their evidence exists.}
+
 
 We reframe agent-authored PRs as engagement workflows rather than binary outcomes. Only 26.6\% of 325,523 agent-authored PRs receive any visible feedback, and just 10.5\% carry feedback substantive enough to retain under our main filter. Where retained feedback appears, triage is nearly split between humans and agents, meaning close to half of the first-line review of agent work is itself performed by agents, a finding that merge rate alone cannot surface.
-The pathway decomposition shows why this matters. No-feedback and feedback-without-response PRs together account for 87.0\% of the corpus, yet the remaining pathways diverge sharply. A ``merge'' label conflates PRs that were rubber-stamped, silently integrated, or genuinely revised, states that matter for trust and oversight but are invisible at the endpoint. By making entry, retained feedback, response cycles, and integration separately measurable, our framework offers the ADLC community a way to ask not just whether agent contributions are merged but also how.
+\textcolor{red}{The pathway decomposition shows why this matters. No-feedback and feedback-without-response PRs together account for 87.0\% of the corpus, yet the remaining pathways diverge sharply. A ``merge'' label conflates PRs that were rubber-stamped, silently integrated, or genuinely revised, states that matter for trust and oversight but are invisible at the endpoint. By making entry, retained feedback, response cycles, and integration separately measurable, our framework offers the ADLC community a way to ask not just whether agent contributions are merged but also how.}
 % PAGE-FIT ORIGINAL:
 % In this study, we examine agent-authored PRs as PR-thread engagement workflows, not as outcomes to be accepted or rejected.
 % Our results show that retained feedback, feedback-response structure, post-feedback revision, and integration endpoints are distinct workflow signals that cannot be replaced by a single review or merge label.
